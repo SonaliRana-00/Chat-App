@@ -1,0 +1,87 @@
+<!Doctype html>
+<html>
+<head>
+<title>CHAT ROOM</title>
+<script src = 'https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.1.2/socket.io.min.js'></script>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" 
+integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous"/>
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css" 
+integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous">
+<style>
+    div.msgbbl{
+      background-color: #ddd;
+      padding: 5px 10px;
+      border-radius: 10px;
+      color: #555;
+      margin-bottom: 5px;
+    }
+</style>
+</head>
+<body>
+<div id ="container">
+  <div class ='well text-center'>
+       <h2>My Chat App</h2>
+  </div>
+<div class = 'row'>
+<div class='col-sm-7'>
+   <div id ='nomsg'>
+      <h1 style = "color:#cccc">No Message Yet!</h1>
+      <div class ='msg-wrapper'></div>
+   </div>
+</div>
+
+<div class ='col-sm-4'>
+   <form action = '' method ='POST'>
+  <div class="form-group">
+    <label for="formGroupExampleInput">User Name</label>
+    <input type="text" class=" username form-control" id="formGroupExampleInput" placeholder="User_Name">
+  </div>
+  <div class="form-group">
+    <label for="formGroupExampleInput2">Message</label>
+    <textarea class=" msg form-control" id="formGroupExampleInput2" row='3' placeholder="Message"></textarea>
+  </div>
+  
+   <button type ='submit' class ='btn btn-success '>Send<span class ='fa fa-paper-plane'></span></button>
+</form>
+   
+
+</div>
+</div>
+</div>
+
+<!--Jquery()-->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.min.js" integrity="sha384-cVKIPhGWiC2Al4u+LWgxfKTRIcfu0JTxR+EQDz/bgldoEyl4H0zUF0QKbrJ0EcQF" crossorigin="anonymous"></script>
+
+
+<script>
+var socket = io.connect('http://127.0.0.1:5000/')
+//broadcast Message
+socket.on('connect',function(){
+  socket.emit('my event',{
+    data: 'User Connected'
+  })
+})
+var form = $('form').on('submit',function(e){
+    e.preventDefault()
+    var user_name = $('input.username').val()
+    var message = $('textarea.msg').val()
+    socket.emit('my event',{
+      user: user_name,
+      msg: message 
+    })
+    //Empty the message field
+    $('textarea.msg').val('').focus()
+
+})
+// capture message
+socket.on('my response' , function( msg ){
+    if(typeof msg.user !== 'undefined'){
+      $('h1').remove()
+      $('div.msg-wrapper').append('<div class="msgbbl"><b>'+ msg.user +' </b> ' + msg.msg + '</div>')
+    }
+    console.log(msg)
+})
+</script>
+</body> 
+</html>
